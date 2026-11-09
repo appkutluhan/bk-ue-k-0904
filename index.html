@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gelir Gider">
+<meta name="theme-color" content="#0e1116">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAACmUlEQVR4nO3dwW1TURRFUQcxjpRJhkkr0AQlQBcZuItQQpqAVqASBsyAHSzx7nNw1irg2NLd+o4lS7m6vrk9wJ+8Ofcb4OUSB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcpLfnfgP7PDx8WzV1PN6vmnrJXsuTY2EZy9derFcRx8QtX0Mflx/H3BUvvo8Lj2P6fpfdx4XHwb8QB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcpFf0G9Jz+f7h06qpu6fHVVOn8OSYtbCM5Wt/JY5BE7fc2Yc4psxdcVsf4hgxfb89fYiDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEhn+A3p+6+fV019efdx1RS/2/3kWFjG8jV+sTWOiVvqY86+OOauqI8hm+KYvp8+Jvi2QhIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHaVMc0//7ovaPx/vR1639u6fH0ded3v9p35Njro/nl+f6eH557n57yjhs/liZ6OOUzYk+TtmcuOK2Mg77/+ZY28fpa2v7OH1t7S13lnE4HK6ub253vh7/Ed9WSOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDtIPNS9S10SXGaEAAAAASUVORK5CYII=">
+<title>Gelir Gider</title>
+<style>
+:root{--bg:#0e1116;--panel:#151a21;--panel2:#1b212a;--line:#262d38;--text:#e8ebf0;--mute:#8a94a5;--in:#4fd1b0;--out:#f0677d;--accent:#8c8ff7;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--text);font:15px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif;min-height:100vh}
+.wrap{max-width:1120px;margin:0 auto;padding:calc(28px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right)) calc(60px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left))}
+header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+h1{font-size:20px;font-weight:600;letter-spacing:-.01em}
+.tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+input,select,button{font:inherit;color:var(--text)}
+input,select{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 12px;outline:none;min-width:0}
+input:focus,select:focus,button:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px #8c8ff733}
+input[type=month]::-webkit-calendar-picker-indicator,input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.7)}
+button{cursor:pointer;border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:9px 14px;transition:background .15s}
+button:hover{background:#232b36}
+.primary{background:var(--accent);border-color:var(--accent);color:#10121c;font-weight:600}
+.primary:hover{background:#9fa2fa}
+.hero{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:28px;display:grid;grid-template-columns:1.1fr 1.4fr;gap:32px;margin-bottom:20px}
+.label{color:var(--mute);font-size:13px}
+.balance{font-size:clamp(34px,5vw,52px);font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:2px 0 18px}
+.balance.neg{color:var(--out)}
+.split{display:flex;gap:28px;flex-wrap:wrap}
+.split b{display:block;font-size:20px;font-variant-numeric:tabular-nums;font-weight:600}
+.in{color:var(--in)}.out{color:var(--out)}
+.bars{display:flex;align-items:flex-end;gap:14px;height:150px}
+.col{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%}
+.pair{flex:1;display:flex;align-items:flex-end;gap:4px;width:100%;justify-content:center}
+.bar{width:40%;max-width:26px;border-radius:6px 6px 2px 2px;min-height:2px;transition:height .3s}
+.bar.i{background:var(--in)}.bar.o{background:var(--out)}
+.col small{color:var(--mute);font-size:12px}
+.grid{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px}
+h2{font-size:15px;font-weight:600;margin-bottom:14px}
+form{display:grid;gap:12px}
+form label{display:grid;gap:5px;color:var(--mute);font-size:13px}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{border:0;background:none;border-radius:9px}
+.seg button.on.gelir{background:#4fd1b026;color:var(--in)}
+.seg button.on.gider{background:#f0677d26;color:var(--out)}
+.formbtns{display:flex;gap:8px}.formbtns .primary{flex:1}
+.donutrow{display:flex;gap:22px;align-items:center;margin-bottom:22px;flex-wrap:wrap}
+.donut{width:120px;height:120px;border-radius:50%;flex:none;-webkit-mask:radial-gradient(circle 38px,transparent 97%,#000 100%);mask:radial-gradient(circle 38px,transparent 97%,#000 100%);background:var(--line)}
+.legend{display:grid;gap:5px;font-size:13px;flex:1;min-width:160px}
+.legend div{display:flex;align-items:center;gap:8px}
+.legend i{width:9px;height:9px;border-radius:3px;flex:none}
+.legend span:last-child{margin-left:auto;color:var(--mute);font-variant-numeric:tabular-nums}
+.filters{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}.filters input{flex:1;min-width:120px}
+.row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.dot{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:700;flex:none}
+.dot.gelir{background:#4fd1b022;color:var(--in)}.dot.gider{background:#f0677d22;color:var(--out)}
+.info{flex:1;min-width:0}.info div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.info small{color:var(--mute)}
+.amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ico{padding:5px 9px;font-size:13px;color:var(--mute);background:none;border-color:transparent}
+.ico:hover{color:var(--text)}
+.empty{color:var(--mute);padding:28px 0;text-align:center}
+@media(max-width:860px){.hero,.grid{grid-template-columns:1fr}}
+@media(max-width:600px){
+ .wrap{padding-left:calc(14px + env(safe-area-inset-left));padding-right:calc(14px + env(safe-area-inset-right))}
+ .hero{padding:20px;gap:22px}.box{padding:18px}
+ input,select{font-size:16px;padding:11px 12px}
+ button{padding:11px 14px}.ico{padding:8px 8px}
+ .row{flex-wrap:wrap}.info{flex-basis:50%}
+ .tools{width:100%}.tools input{flex:1}
+}
+html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Gelir Gider</h1>
+    <div class="tools">
+      <input type="month" id="month" aria-label="Ay">
+      <button id="all" title="Tüm zamanları göster">Tümü</button>
+      <button id="export">CSV indir</button>
+      <button id="backup">Yedekle</button>
+      <button id="restore">Geri yükle</button>
+      <input type="file" id="file" accept=".json,application/json" hidden>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div>
+      <div class="label" id="periodLabel">Net bakiye</div>
+      <div class="balance" id="balance">₺0,00</div>
+      <div class="split">
+        <div><span class="label">Gelir</span><b class="in" id="sumIn">₺0,00</b></div>
+        <div><span class="label">Gider</span><b class="out" id="sumOut">₺0,00</b></div>
+      </div>
+    </div>
+    <div class="bars" id="bars" aria-label="Son 6 ay"></div>
+  </section>
+
+  <div class="grid">
+    <div class="box">
+      <h2 id="formTitle">Yeni işlem</h2>
+      <form id="form">
+        <div class="seg" id="seg">
+          <button type="button" data-t="gelir" class="on gelir">Gelir</button>
+          <button type="button" data-t="gider">Gider</button>
+        </div>
+        <label>Tutar (₺)<input id="amount" type="number" step="0.01" min="0.01" required placeholder="0,00"></label>
+        <label>Kategori<select id="category"></select></label>
+        <label>Tarih<input id="date" type="date" required></label>
+        <label>Not<input id="note" type="text" maxlength="80" placeholder="İsteğe bağlı"></label>
+        <div class="formbtns">
+          <button class="primary" type="submit" id="submitBtn">Ekle</button>
+          <button type="button" id="cancel" hidden>Vazgeç</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="box">
+      <h2>Harcama dağılımı</h2>
+      <div class="donutrow"><div class="donut" id="donut"></div><div class="legend" id="legend"></div></div>
+      <h2>İşlemler</h2>
+      <div class="filters">
+        <input id="q" type="search" placeholder="Ara…">
+        <select id="ftype"><option value="all">Hepsi</option><option value="gelir">Gelir</option><option value="gider">Gider</option></select>
+      </div>
+      <div id="list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const KEY = 'gelirgider.v1';
+const CATS = {
+  gelir: ['Maaş', 'Ek gelir', 'Yatırım', 'Diğer'],
+  gider: ['Market', 'Kira', 'Faturalar', 'Ulaşım', 'Eğlence', 'Sağlık', 'Eğitim', 'Diğer']
+};
+const COLORS = ['#f0677d', '#8c8ff7', '#f5b857', '#4fd1b0', '#5bb0f0', '#c58af0', '#f08a5b', '#7b8494'];
+const $ = id => document.getElementById(id);
+const money = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' });
+
+let tx = [];
+try { tx = JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { tx = []; }
+let type = 'gelir', editId = null;
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(tx)); } catch (e) {} };
+const today = () => new Date().toISOString().slice(0, 10);
+
+$('month').value = today().slice(0, 7);
+$('date').value = today();
+
+function setType(t) {
+  type = t;
+  document.querySelectorAll('#seg button').forEach(b => b.className = b.dataset.t === t ? 'on ' + t : '');
+  $('category').innerHTML = CATS[t].map(c => `<option>${c}</option>`).join('');
+}
+
+function monthTx() {
+  const m = $('month').value;
+  return tx.filter(t => !m || t.date.startsWith(m));
+}
+
+function monthName(ym) {
+  return new Date(ym + '-01T12:00').toLocaleDateString('tr-TR', { month: 'short' });
+}
+
+function render() {
+  const m = $('month').value;
+  const set = monthTx();
+  const inc = set.filter(t => t.type === 'gelir').reduce((s, t) => s + t.amount, 0);
+  const exp = set.filter(t => t.type === 'gider').reduce((s, t) => s + t.amount, 0);
+  const bal = inc - exp;
+  $('balance').textContent = money.format(bal);
+  $('balance').classList.toggle('neg', bal < 0);
+  $('sumIn').textContent = money.format(inc);
+  $('sumOut').textContent = money.format(exp);
+  $('periodLabel').textContent = m ? 'Net bakiye · ' + new Date(m + '-01T12:00').toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' }) : 'Net bakiye · tüm zamanlar';
+
+  // last 6 months bars
+  const base = m ? new Date(m + '-01T12:00') : new Date();
+  const months = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(base.getFullYear(), base.getMonth() - i, 1, 12);
+    months.push(d.toISOString().slice(0, 7));
+  }
+  const data = months.map(k => {
+    const s = tx.filter(t => t.date.startsWith(k));
+    return { k, i: s.filter(t => t.type === 'gelir').reduce((a, t) => a + t.amount, 0), o: s.filter(t => t.type === 'gider').reduce((a, t) => a + t.amount, 0) };
+  });
+  const max = Math.max(1, ...data.map(d => Math.max(d.i, d.o)));
+  $('bars').innerHTML = data.map(d => `<div class="col"><div class="pair">
+    <div class="bar i" style="height:${d.i / max * 100}%" title="Gelir: ${money.format(d.i)}"></div>
+    <div class="bar o" style="height:${d.o / max * 100}%" title="Gider: ${money.format(d.o)}"></div></div>
+    <small>${monthName(d.k)}</small></div>`).join('');
+
+  // donut
+  const byCat = {};
+  set.filter(t => t.type === 'gider').forEach(t => byCat[t.category] = (byCat[t.category] || 0) + t.amount);
+  const cats = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
+  if (!cats.length) {
+    $('donut').style.background = 'var(--line)';
+    $('legend').innerHTML = '<div class="label">Bu dönemde gider yok.</div>';
+  } else {
+    let acc = 0;
+    const stops = cats.map(([, v], i) => { const s = acc / exp * 100; acc += v; return `${COLORS[i % COLORS.length]} ${s}% ${acc / exp * 100}%`; });
+    $('donut').style.background = `conic-gradient(${stops.join(',')})`;
+    $('legend').innerHTML = cats.map(([c, v], i) =>
+      `<div><i style="background:${COLORS[i % COLORS.length]}"></i><span>${c}</span><span>%${Math.round(v / exp * 100)}</span></div>`).join('');
+  }
+
+  // list
+  const q = $('q').value.trim().toLowerCase(), ft = $('ftype').value;
+  const rows = set.filter(t => (ft === 'all' || t.type === ft) && (!q || (t.note + ' ' + t.category).toLowerCase().includes(q)))
+    .sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
+  $('list').innerHTML = rows.length ? '' : '<div class="empty">Henüz işlem yok. Soldaki formdan ilk işlemi ekle.</div>';
+  rows.forEach(t => {
+    const el = document.createElement('div');
+    el.className = 'row';
+    const sign = t.type === 'gelir' ? '+' : '−';
+    el.innerHTML = `<div class="dot ${t.type}">${sign}</div>
+      <div class="info"><div></div><small></small></div>
+      <div class="amt ${t.type === 'gelir' ? 'in' : 'out'}">${sign}${money.format(t.amount)}</div>
+      <button class="ico" data-a="edit">Düzenle</button><button class="ico" data-a="del">Sil</button>`;
+    el.querySelector('.info div').textContent = t.note || t.category;
+    el.querySelector('small').textContent = t.category + ' · ' + new Date(t.date + 'T12:00').toLocaleDateString('tr-TR');
+    el.querySelector('[data-a=edit]').onclick = () => startEdit(t.id);
+    el.querySelector('[data-a=del]').onclick = () => { if (confirm('Bu işlem silinsin mi?')) { tx = tx.filter(x => x.id !== t.id); save(); render(); } };
+    $('list').appendChild(el);
+  });
+}
+
+function startEdit(id) {
+  const t = tx.find(x => x.id === id); if (!t) return;
+  editId = id; setType(t.type);
+  $('amount').value = t.amount; $('category').value = t.category; $('date').value = t.date; $('note').value = t.note;
+  $('formTitle').textContent = 'İşlemi düzenle'; $('submitBtn').textContent = 'Kaydet'; $('cancel').hidden = false;
+  $('amount').focus();
+}
+function resetForm() {
+  editId = null; $('form').reset(); $('date').value = today(); setType(type);
+  $('formTitle').textContent = 'Yeni işlem'; $('submitBtn').textContent = 'Ekle'; $('cancel').hidden = true;
+}
+
+$('form').onsubmit = e => {
+  e.preventDefault();
+  const amount = parseFloat($('amount').value);
+  if (!(amount > 0)) return;
+  const rec = { type, amount, category: $('category').value, date: $('date').value, note: $('note').value.trim() };
+  if (editId) tx = tx.map(t => t.id === editId ? { ...t, ...rec } : t);
+  else tx.push({ id: Date.now(), ...rec });
+  save();
+  if ($('month').value && !rec.date.startsWith($('month').value)) $('month').value = rec.date.slice(0, 7);
+  resetForm(); render();
+};
+$('cancel').onclick = resetForm;
+document.querySelectorAll('#seg button').forEach(b => b.onclick = () => setType(b.dataset.t));
+$('month').onchange = render;
+$('all').onclick = () => { $('month').value = ''; render(); };
+$('q').oninput = render;
+$('ftype').onchange = render;
+$('export').onclick = () => {
+  const esc = v => '"' + String(v).replace(/"/g, '""') + '"';
+  const lines = ['Tarih,Tür,Kategori,Tutar,Not', ...[...tx].sort((a, b) => a.date.localeCompare(b.date))
+    .map(t => [t.date, t.type, t.category, t.amount, esc(t.note)].join(','))];
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\ufeff' + lines.join('\n')], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'gelir-gider.csv'; a.click();
+};
+
+$('backup').onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(tx)], { type: 'application/json' }));
+  a.download = 'gelir-gider-yedek.json'; a.click();
+};
+$('restore').onclick = () => $('file').click();
+$('file').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const data = JSON.parse(r.result);
+      if (!Array.isArray(data)) throw 0;
+      const ok = data.filter(t => t && (t.type === 'gelir' || t.type === 'gider') && t.amount > 0 && /^\d{4}-\d{2}-\d{2}$/.test(t.date))
+        .map(t => ({ id: t.id || Date.now() + Math.random(), type: t.type, amount: +t.amount, category: String(t.category || 'Diğer'), date: t.date, note: String(t.note || '') }));
+      if (!confirm(ok.length + ' işlem yüklenecek. Mevcut kayıtların yerine geçsin mi?')) return;
+      tx = ok; save(); render();
+    } catch (err) { alert('Bu dosya geçerli bir yedek değil.'); }
+  };
+  r.readAsText(f); e.target.value = '';
+};
+
+setType('gelir');
+render();
+</script>
+</body>
+</html>
