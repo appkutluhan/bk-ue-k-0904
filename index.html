@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -40,7 +40,7 @@ button:hover{background:#232b36}
 .bar{width:40%;max-width:26px;border-radius:6px 6px 2px 2px;min-height:2px;transition:height .3s}
 .bar.i{background:var(--in)}.bar.o{background:var(--out)}
 .col small{color:var(--mute);font-size:12px}
-.grid{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start}
+.grid{display:grid;grid-template-columns:340px minmax(0,1fr);gap:20px;align-items:start}
 .box{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px}
 h2{font-size:15px;font-weight:600;margin-bottom:14px}
 form{display:grid;gap:12px}
@@ -60,7 +60,7 @@ form label{display:grid;gap:5px;color:var(--mute);font-size:13px}
 .legend b{color:var(--text);font-weight:600}
 .filters{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}.filters input{flex:1;min-width:120px}
 .row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
-.dot{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:700;flex:none}
+.dot{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:18px;flex:none}
 .dot.gelir{background:#4fd1b022;color:var(--in)}.dot.gider{background:#f0677d22;color:var(--out)}
 .info{flex:1;min-width:0}.info div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .info small{display:block;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -69,7 +69,7 @@ form label{display:grid;gap:5px;color:var(--mute);font-size:13px}
 .ico{flex:none;padding:5px 7px;font-size:15px;line-height:1;color:var(--mute);background:none;border-color:transparent}
 .ico:hover{color:var(--text)}
 .empty{color:var(--mute);padding:28px 0;text-align:center}
-@media(max-width:860px){.hero,.grid{grid-template-columns:1fr}}
+@media(max-width:860px){.hero,.grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:600px){
  .wrap{padding-left:calc(14px + env(safe-area-inset-left));padding-right:calc(14px + env(safe-area-inset-right))}
  .hero{padding:20px;gap:22px}.box{padding:18px}
@@ -93,6 +93,17 @@ html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
 .pad button{height:62px;font-size:22px;border-radius:18px;padding:0;-webkit-user-select:none;user-select:none}
 .linkbtn{background:none;border:0;color:var(--mute);font-size:13px}
 .linkbtn:hover{background:none;color:var(--text)}
+
+html{background:var(--bg);overflow-x:hidden;overscroll-behavior:none}
+body{overflow-x:hidden;width:100%;min-height:100vh;min-height:100dvh;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+*{touch-action:manipulation}
+input,select{-webkit-user-select:text;user-select:text;max-width:100%}
+.hero>*,.grid>*,form label{min-width:0}
+input[type=date],input[type=month]{width:100%;min-width:0;min-height:44px;-webkit-appearance:none;appearance:none;text-align:left}
+.side{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none}
+.acts{display:flex;gap:2px}
+.acts .ico{padding:6px 9px}
+.tools input[type=month]{flex:1 1 150px;min-width:150px;width:auto}
 </style>
 </head>
 <body>
@@ -173,6 +184,12 @@ const CATS = {
   gelir: ['Maaş', 'Ek gelir', 'Yatırım', 'Diğer'],
   gider: ['Market', 'Kira', 'Faturalar', 'Ulaşım', 'Eğlence', 'Sağlık', 'Eğitim', 'Diğer']
 };
+const ICONS = {
+  gelir: { 'Maaş': '💼', 'Ek gelir': '💸', 'Yatırım': '📈', 'Diğer': '✨' },
+  gider: { 'Market': '🛒', 'Kira': '🏠', 'Faturalar': '💡', 'Ulaşım': '🚌', 'Eğlence': '🎬', 'Sağlık': '💊', 'Eğitim': '📚', 'Diğer': '📦' }
+};
+const ico = (t, c) => (ICONS[t] && ICONS[t][c]) || '•';
+const esc = s => String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 const COLORS = ['#f0677d', '#8c8ff7', '#f5b857', '#4fd1b0', '#5bb0f0', '#c58af0', '#f08a5b', '#7b8494'];
 const $ = id => document.getElementById(id);
 const money = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' });
@@ -189,7 +206,7 @@ $('date').value = today();
 function setType(t) {
   type = t;
   document.querySelectorAll('#seg button').forEach(b => b.className = b.dataset.t === t ? 'on ' + t : '');
-  $('category').innerHTML = CATS[t].map(c => `<option>${c}</option>`).join('');
+  $('category').innerHTML = CATS[t].map(c => `<option value="${c}">${ico(t, c)} ${c}</option>`).join('');
 }
 
 function monthTx() {
@@ -243,7 +260,7 @@ function render() {
     const stops = cats.map(([, v], i) => { const s = acc / exp * 100; acc += v; return `${COLORS[i % COLORS.length]} ${s}% ${acc / exp * 100}%`; });
     $('donut').style.background = `conic-gradient(${stops.join(',')})`;
     $('legend').innerHTML = cats.map(([c, v], i) =>
-      `<div><i style="background:${COLORS[i % COLORS.length]}"></i><span>${c}</span><span><b>${money.format(v)}</b> · %${Math.round(v / exp * 100)}</span></div>`).join('');
+      `<div><i style="background:${COLORS[i % COLORS.length]}"></i><span>${ico('gider', c)} ${esc(c)}</span><span><b>${money.format(v)}</b> · %${Math.round(v / exp * 100)}</span></div>`).join('');
   }
 
   // list
@@ -256,10 +273,9 @@ function render() {
     el.className = 'row';
     const sign = t.type === 'gelir' ? '+' : '−';
     const amtStr = sign + money.format(t.amount), sz = amtStr.length >= 14 ? 'xs' : amtStr.length >= 11 ? 'sm' : '';
-    el.innerHTML = `<div class="dot ${t.type}">${sign}</div>
+    el.innerHTML = `<div class="dot ${t.type}">${ico(t.type, t.category)}</div>
       <div class="info"><div></div><small></small></div>
-      <div class="amt ${t.type === 'gelir' ? 'in' : 'out'} ${sz}">${amtStr}</div>
-      <button class="ico" data-a="edit" title="Düzenle" aria-label="Düzenle">✎</button><button class="ico" data-a="del" title="Sil" aria-label="Sil">✕</button>`;
+      <div class="side"><div class="amt ${t.type === 'gelir' ? 'in' : 'out'} ${sz}">${amtStr}</div><div class="acts"><button class="ico" data-a="edit" title="Düzenle" aria-label="Düzenle">✎</button><button class="ico" data-a="del" title="Sil" aria-label="Sil">✕</button></div></div>`;
     el.querySelector('.info div').textContent = t.note || t.category;
     el.querySelector('small').textContent = t.category + ' · ' + new Date(t.date + 'T12:00').toLocaleDateString('tr-TR');
     el.querySelector('[data-a=edit]').onclick = () => startEdit(t.id);
@@ -297,7 +313,7 @@ $('month').onchange = render;
 $('all').onclick = () => { $('month').value = ''; render(); };
 $('q').oninput = render;
 $('ftype').innerHTML = '<option value="all">Tüm kategoriler</option>' + ['gelir', 'gider'].map(t =>
-  `<optgroup label="${t === 'gelir' ? 'Gelir' : 'Gider'}">` + CATS[t].map(c => `<option value="${t}:${c}">${c}</option>`).join('') + '</optgroup>').join('');
+  `<optgroup label="${t === 'gelir' ? 'Gelir' : 'Gider'}">` + CATS[t].map(c => `<option value="${t}:${c}">${ico(t, c)} ${c}</option>`).join('') + '</optgroup>').join('');
 $('ftype').onchange = render;
 $('export').onclick = () => {
   const esc = v => '"' + String(v).replace(/"/g, '""') + '"';
@@ -427,6 +443,7 @@ $('forgot').onclick = () => {
   tx = []; auth = null; step = 'new'; $('nameIn').value = ''; drawLock();
 };
 $('lockBtn').onclick = lockNow;
+['gesturestart', 'gesturechange', 'gestureend'].forEach(ev => document.addEventListener(ev, e => e.preventDefault()));
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) hiddenAt = Date.now();
   else if (auth && !$('app').hidden && hiddenAt && Date.now() - hiddenAt > 60000) lockNow();
