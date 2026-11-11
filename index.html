@@ -165,6 +165,14 @@ button:hover{background:#1b2c4a}
 .wrap>*{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
 .wrap>*:nth-child(2){animation-delay:.05s}.wrap>*:nth-child(3){animation-delay:.1s}.wrap>*:nth-child(4){animation-delay:.15s}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.wrap{padding-bottom:calc(100px + env(safe-area-inset-bottom))!important}
+.wrap>.nav{animation:none}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;justify-content:center;gap:6px;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:#0b1426e8;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+.nav button{flex:1;max-width:160px;display:grid;justify-items:center;gap:3px;padding:7px 4px;border:0;background:none;color:var(--mute);font-size:11.5px;border-radius:12px}
+.nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav button:hover{background:#ffffff0d}
+.nav button.on{color:var(--in);background:#34d3991a}
 </style>
 </head>
 <body>
@@ -175,14 +183,13 @@ button:hover{background:#1b2c4a}
       <input type="month" id="month" aria-label="Ay">
       <button id="all" title="Tüm zamanları göster">Tümü</button>
       <button id="export">CSV indir</button>
-      <button id="lockBtn">Kilitle</button>
       <button id="backup">Yedekle</button>
       <button id="restore">Geri yükle</button>
       <input type="file" id="file" accept=".json,application/json" hidden>
     </div>
   </header>
 
-  <section class="hero">
+  <section class="hero" data-tab="bal">
     <div>
       <div class="label" id="periodLabel">Net bakiye</div>
       <div class="balance" id="balance">₺0,00</div>
@@ -194,7 +201,7 @@ button:hover{background:#1b2c4a}
     <div><div class="barinfo" id="barInfo"></div><div class="bars" id="bars" aria-label="Son 6 ay"></div></div>
   </section>
 
-  <div class="grid">
+  <div class="grid" data-tab="tx">
     <div class="box">
       <h2 id="formTitle">Yeni işlem</h2>
       <form id="form">
@@ -225,7 +232,7 @@ button:hover{background:#1b2c4a}
     </div>
   </div>
 
-  <div class="box" style="margin-top:20px">
+  <div class="box" data-tab="inv">
     <div class="invhead"><h2>Yatırımlar</h2><div class="label">Toplam maliyet: <b id="invTotal">₺0,00</b></div></div>
     <div class="label hint">Buraya eklediklerin bakiyenden düşülmez. Parayı harcadıysan Giderler'e "Yatırım" kategorisiyle ayrıca ekle. Aynı ürünü tekrar alırsan aynı adı yaz, alım mevcut yatırıma eklenir ve ortalama maliyet otomatik hesaplanır.</div>
     <form id="invForm" class="invform">
@@ -240,6 +247,12 @@ button:hover{background:#1b2c4a}
     <div class="donutrow invdonut"><div class="donut" id="invDonut"></div><div class="legend" id="invLegend"></div></div>
     <div id="invList"></div>
   </div>
+<nav class="nav" id="nav">
+    <button type="button" data-t="bal" class="on"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h12v4"/><path d="M3 7v10a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1H5a2 2 0 0 1-2-2z"/><circle cx="16.5" cy="14" r="1"/></svg><span>Bakiye</span></button>
+    <button type="button" data-t="tx"><svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r=".6"/><circle cx="4" cy="12" r=".6"/><circle cx="4" cy="18" r=".6"/></svg><span>İşlemler</span></button>
+    <button type="button" data-t="inv"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg><span>Yatırım</span></button>
+    <button type="button" id="lockBtn"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Kilitle</span></button>
+  </nav>
 </div>
 
 <div class="dlg" id="dlg" hidden>
@@ -489,8 +502,8 @@ function ask(text, yes = 'Sil', cancel = true) {
     $('dlgYes').onclick = () => done(true); $('dlgNo').onclick = () => done(false);
   });
 }
-const uid = () => Date.now() + Math.random();
-const isDate = d => /^\d{4}-\d{2}-\d{2}$/.test(d);
+function uid() { return Date.now() + Math.random(); }
+function isDate(d) { return /^\d{4}-\d{2}-\d{2}$/.test(d); }
 function normInv(a) {
   if (!Array.isArray(a)) return [];
   const map = new Map();
@@ -645,6 +658,7 @@ function drawLock() {
 }
 
 function unlock() {
+  showTab('bal');
   $('lock').hidden = true; $('app').hidden = false;
   $('hello').textContent = 'Merhaba, ' + auth.name;
   render();
@@ -703,8 +717,17 @@ document.addEventListener('visibilitychange', () => {
   else if (auth && !$('app').hidden && hiddenAt && Date.now() - hiddenAt > 60000) lockNow();
 });
 
+function showTab(t) {
+  document.querySelectorAll('[data-tab]').forEach(el => { el.hidden = el.dataset.tab !== t; });
+  document.querySelectorAll('#nav [data-t]').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  $('month').hidden = $('all').hidden = t === 'inv';
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll('#nav [data-t]').forEach(b => { b.onclick = () => showTab(b.dataset.t); });
+
 setType('gelir');
 render();
+showTab('bal');
 if (auth) { step = 'enter'; drawLock(); if (remaining() > 0) showWait(); }
 else { step = 'new'; drawLock(); }
 </script>
